@@ -24,4 +24,4 @@
 
 https://gist.github.com/roachhd/1f029bd4b50b8a524f3c
 
-💵[부자될거야](https://www.notion.so/SQL-655cad7d274949c094fd2b959abdaa8a)
+💵[SQL 튜닝](https://www.notion.so/SQL-655cad7d274949c094fd2b959abdaa8a)
