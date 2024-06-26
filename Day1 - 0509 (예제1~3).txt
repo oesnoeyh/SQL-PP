@@ -1,0 +1,586 @@
+Day1 - 0509 (예제1~3)
+---
+
+[0509.sql](https://prod-files-secure.s3.us-west-2.amazonaws.com/047ca486-8302-4e2a-a311-1f4ac4e69ebc/58a8e3a7-e4ec-40d6-961f-f69ad8e11d37/0509.sql)
+
+### sql이란 ?
+
+- structure query language 구조적 질의 언어
+
+데이터 베이스의 데이터를 검색하고 다루는 전문 프로그램 언어
+
+데이터 분석가들이 가장 많이 사용하는 언어
+
+### sql의 종류 5가지?
+
+- query : 데이터 검색언어, select문의 6가지 절
+- dml 문 : data manifulation language (데이터 조작 언어)
+    
+    insert, update, delete, merge, select
+    
+- ddl 문 : data definition language (데이터 정의 언어)
+    
+    create, alter, drop, truncate, rename
+    
+- dcl 문 : data control language (데이터 제어 언어)
+    
+    grant, revoke
+    
+- tcl 문 : transaction control language (트랜잭션 제어 언어)
+    
+    commit, rollback, savepoint
+    
+
+---
+
+### 오라클 설치
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/047ca486-8302-4e2a-a311-1f4ac4e69ebc/90236ffc-fc87-4fef-8455-045a1f6bb85c/Untitled.png)
+
+1. C 드라이브 밑에 oracleinstall 폴더 생성
+2. 오라클 파일 복사 , 압축 풀고 관리자 권한으로 setup 실행
+3. 집에서 설치할시 d드라이브에 오라클 폴더 만들어 설치 가능
+4. 비밀번호 oracle_4U
+5. 설치 중간 뜨는 네트워크 팝업 허용
+
+### 수업 스크립트
+
+```jsx
+alter session set nls_Date_format='RR/MM/DD';
+drop table emp;
+drop table dept;
+
+CREATE TABLE DEPT
+       (DEPTNO number(10),
+        DNAME VARCHAR2(14),
+        LOC VARCHAR2(13) );
+
+INSERT INTO DEPT VALUES (10, 'ACCOUNTING', 'NEW YORK');
+INSERT INTO DEPT VALUES (20, 'RESEARCH',   'DALLAS');
+INSERT INTO DEPT VALUES (30, 'SALES',      'CHICAGO');
+INSERT INTO DEPT VALUES (40, 'OPERATIONS', 'BOSTON');
+
+CREATE TABLE EMP (
+ EMPNO               NUMBER(4) NOT NULL,
+ ENAME               VARCHAR2(10),
+ JOB                 VARCHAR2(9),
+ MGR                 NUMBER(4) ,
+ HIREDATE            DATE,
+ SAL                 NUMBER(7,2),
+ COMM                NUMBER(7,2),
+ DEPTNO              NUMBER(2) );
+
+INSERT INTO EMP VALUES (7839,'KING','PRESIDENT',NULL,'81-11-17',5000,NULL,10);
+INSERT INTO EMP VALUES (7698,'BLAKE','MANAGER',7839,'81-05-01',2850,NULL,30);
+INSERT INTO EMP VALUES (7782,'CLARK','MANAGER',7839,'81-05-09',2450,NULL,10);
+INSERT INTO EMP VALUES (7566,'JONES','MANAGER',7839,'81-04-01',2975,NULL,20);
+INSERT INTO EMP VALUES (7654,'MARTIN','SALESMAN',7698,'81-09-10',1250,1400,30);
+INSERT INTO EMP VALUES (7499,'ALLEN','SALESMAN',7698,'81-02-11',1600,300,30);
+INSERT INTO EMP VALUES (7844,'TURNER','SALESMAN',7698,'81-08-21',1500,0,30);
+INSERT INTO EMP VALUES (7900,'JAMES','CLERK',7698,'81-12-11',950,NULL,30);
+INSERT INTO EMP VALUES (7521,'WARD','SALESMAN',7698,'81-02-23',1250,500,30);
+INSERT INTO EMP VALUES (7902,'FORD','ANALYST',7566,'81-12-11',3000,NULL,20);
+INSERT INTO EMP VALUES (7369,'SMITH','CLERK',7902,'80-12-09',800,NULL,20);
+INSERT INTO EMP VALUES (7788,'SCOTT','ANALYST',7566,'82-12-22',3000,NULL,20);
+INSERT INTO EMP VALUES (7876,'ADAMS','CLERK',7788,'83-01-15',1100,NULL,20);
+INSERT INTO EMP VALUES (7934,'MILLER','CLERK',7782,'82-01-11',1300,NULL,10);
+
+commit;
+```
+
+1. SQL Developer 다운 (otn.oracle.com) 
+    - 오라클을 편하게 사용할 수 있도록 도와주는 툴
+    - 설치 필요 없이 압축만 풀면 됨
+
+### 오라클 접속하기
+
+- 명령 프롬프트 창 열기
+- 아래에 작업 표시줄에 보면 검색에 cmd 라고 치고 엔터 치기
+- 명령 프롬프트 창에서 다음과 같이 오라클에 접속
+
+```jsx
+Microsoft Windows [Version 10.0.22621.3447]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\itwill>sqlplus / as sysdba
+
+SQL*Plus: Release 21.0.0.0.0 - Production on 목 5월 9 14:47:42 2024
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle.  All rights reserved.
+
+다음에 접속됨:
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+SQL>
+```
+
+- 접속한 유저가 누군지 확인
+
+```jsx
+SQL> show user
+USER은 "SYS"입니다
+SQL>
+```
+
+- 실습할 때 사용할 유저 생성
+
+```jsx
+
+SQL>create user c##scott
+		identified by tiger;
+
+# ; (세미콜론)은 SQL을 종료하겠다는 종료 명령어
+종료할테니, 이제 SQL을 실행하라는 의미
+```
+
+- c##scott 유저에게 dba 권한 부여
+
+```jsx
+SQL> grant dba to c##scott;
+```
+
+- c##scott 유저로 접속
+
+```jsx
+SQL> connect c##scott/tiger
+연결되었습니다.
+SQL> show user
+```
+
+- 리스너의 상태 확인
+    
+    리스너(listener)는 오라클에 접속할 때 데이터베이스 서버에 떠있는 프로세서. 건물로 치면 경비원 아저씨
+    
+
+```jsx
+(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=DESKTOP-EEKMGKO)(PORT=1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(PIPENAME=\\.\pipe\EXTPROC1521ipc)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=127.0.0.1)(PORT=5500))(Security=(my_wallet_directory=C:\APP\ITWILL\PRODUCT\21C\admin\XE\xdb_wallet))(Presentation=HTTP)(Session=RAW))
+서비스 요약...
+"528a143ed473453dac8d1c9754521fc1" 서비스는 1개의 인스턴스를 가집니다.
+  "xe" 인스턴스(READY 상태)는 이 서비스에 대해 2 처리기를 가집니다.
+"CLRExtProc" 서비스는 1개의 인스턴스를 가집니다.
+  "CLRExtProc" 인스턴스(UNKNOWN 상태)는 이 서비스에 대해 1 처리기를 가집니다.
+"XE" 서비스는 1개의 인스턴스를 가집니다.
+  "xe" 인스턴스(READY 상태)는 이 서비스에 대해 2 처리기를 가집니다.
+"XEXDB" 서비스는 1개의 인스턴스를 가집니다.
+  "xe" 인스턴스(READY 상태)는 이 서비스에 대해 1 처리기를 가집니다.
+"xepdb1" 서비스는 1개의 인스턴스를 가집니다.
+  "xe" 인스턴스(READY 상태)는 이 서비스에 대해 2 처리기를 가집니다.
+명령이 성공적으로 수행되었습니다
+
+#HOST는 건물주소, PORT는 통로번호 XE는 회사이름(서비스 이름)
+HOST: DESKTOP-EEKMGKO
+PORT: 1521
+서비스 이름: xe
+```
+
+### sqldeveloper로 오라클에 접속하기
+
+- 새 갤러리 오픈
+- 데이터베이스 접속
+- name: window_xe / 사용자 이름: scott / 비밀번호: tiger
+- 스크립트 붙여넣고 ctrl A 전체선택 후 실행
+- 아래 명령 붙여넣고 ctrl 엔터
+
+```jsx
+select *
+from emp;
+```
+
+- 환경설정 내용 복습
+    - 오라클 설치
+    - c##scott 유저 생성
+    - sqldeveloper로 c##scott 유저로 오라클 접속
+    - 실습 스크립트 수행
+    
+- dbeaver 툴 설치하고 접속하기
+    - 무료툴: sqldeveloper, dbeaver 툴
+    - 구글에서 dbever 설치 검색
+
+---
+
+## 예제1. 테이블에서 특정 열 선택하기
+
+```jsx
+select empno, ename, sal
+from emp;
+
+#설명: select의 뜻은 검색해라~ 라는 의미
+*(별표)는 모든 컬럼을 다 선택하라는 의미
+select 절에는 검색할 컬럼명들을 적습니다
+from 절 부터 줄 바꿔서 기술하기
+세미콜론 (;)은 이제 sql을 종료할테니 명령어를 실행하라는 의미
+```
+
+- emp 테이블의 컬럼 소개
+    - empno: 사원번호
+    - ename: 사원 이름
+    - sal: 월급
+    - job: 직업
+    - hiredate: 입사일
+    - comm: 커미션
+    - mgr: 직속상사의 사원번호
+    - deptno: 부서번호
+- select 절에는 컬럼명, from절에는 테이블
+
+### 문제1-1. 사원(emp)테이블에서 사원이름, 직업과 입사일과 부서번호를 출력하시오!
+
+```jsx
+답: 
+
+SELECT ename, job, hiredate, deptno
+FROM emp;
+```
+
+### 문제1-2. 사원(emp)테이블에서 사원이름, 월급, 커미션, 직업을 출력하시오
+
+```jsx
+답:
+
+SELECT ename, sal, comm, job
+FROM emp;
+```
+
+---
+
+## 예제2. 테이블에서 모든 열(column) 출력하기
+
+```jsx
+SELECT *
+FROM dept;
+
+#설명: *(별표)를 asterisk 라고 부름
+모든 컬럼을 다 검색하라는 의미
+#설명: dept는 부서 테이블. 부서에 대한 정보를 가지고 있는 테이블
+```
+
+- dept 테이블의 컬럼 소개
+    - deptno: 부서번호
+    - dname: 부서명
+    - loc: 부서위치
+    
+    ### 문제2-1. 사원(emp)테이블의 모든 컬럼과 데이터를 출력하시오
+    
+    ```jsx
+    답: 
+    
+    SELECT *
+    FROM emp;
+    ```
+    
+    ### 문제2-2. 부서(dept) 테이블에서 부서번호, 부서명을 출력하시오
+    
+    ```jsx
+    답: 
+    
+    SELECT deptno, dname
+    FROM dept;
+    ```
+    
+
+---
+
+## 예제3. 컬럼 별칭을 사용하여 출력되는 컬럼명 변경하기
+
+```jsx
+select ename as 이름, sal as 월급
+from emp;
+
+#설명: as는 생략 가능
+```
+
+### 문제3-1. 사원이름, 직업과 월급을 출력하는데 모두 다 컬럼명을 한글로 출력하시오
+
+```jsx
+답: 
+
+select ename as "사원 이름", job as 직업, sal as 월급
+from emp;
+
+#설명: 컬럼 별칭을 사용할 때 더블 쿼테이션 마크를 사용해야하는 경우
+1. 공백문자나 특수문자(_,$,#)를 컬럼 별칭으로 사용할 때
+2. 영어의 대소문자를 구분하고 싶을 때
+
+#예: select empno as "Employee Number", ename as "Employee name"
+from emp;
+
+#오라클 전체를 통틀어서 더블 쿼테이션 마크를 사용하는 때는 이 경우밖에 없음.
+나머지는 모두 다 싱글 쿼테이션 마크 사용
+```
+
+---
+
+### 우리반 테이블 생성 스크립트
+
+```jsx
+create table emp19
+(empno number(10),
+ename varchar2(20),
+age number(10),
+birth date,
+telecom varchar2(10),
+major varchar2(50),
+email varchar2(60),
+address varchar2(100));
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values(9,'이현서', 25, to_date('2000/01/06','YYYY/MM/DD'), 'KT', 'AI전공', 'oesnoeyhl@naver.com', '경기도 남양주시 별내동');
+
+select * from emp19;
+```
+
+```jsx
+
+drop  table emp19;
+
+ create   table   emp19
+ ( empno     number(10),
+   ename     varchar2(20),
+   age         number(10),
+   birth         date,
+   telecom     varchar2(10),
+   major        varchar2(50),
+   email         varchar2(60),
+   address      varchar2(100) ) ;
+
+ INSERT into emp19(empno, ename, age, birth, telecom, major, email, address)
+values(5, '신지혜', 28, to_date('1996/04/17', 'RRRR/MM/DD'),
+'SKT', '소비자학', 'cislisa79@naver.com', '서울시 강서구 등촌1동');
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+VALUES (6, '박보은', 25, to_date('1999/01/05', 'YYYY/MM/DD'), 'kt', '컴퓨터학', 'boeun9511@gmail.com', '경기도 광주시 초월읍');
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 14, '노승욱', 26, to_date('1999/10/19','YYYY/MM/DD'),'sk','수학과','nosw19@naver.com','성남시 중원구 성남동');
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+Values(3,'박두연',28,to_date('1996/01/18','YYYY/MM/DD'),'sk','간호학과','dypark@gmail.com','서울시 동작구 상도동');
+
+insert into emp19(empno, ename, age, birth, telecom, major, email, address)
+values(12, '윤지윤', 28, to_date('1996/02/29','YYYY/MM/DD'), 'skt',
+'디자인과' ,'younyoun229@gmail.com', '서울시 강서구 염창동' );
+
+insert into emp19 (empno,ename,age,birth,telecom,major,email,address)
+values(29, '문혜선', '25',to_date('1999/04/16','YYYY/MM/DD'),'sk','정보통신공학과','hyeseon0416@naver.com','경기도 화성시 능동' );
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+VALUES(19, '안민영', 29,to_date('1995/01/19','YYYY/MM/DD'), 'lg', '영어교육',
+'miny9501@gmail.com','서울시 광진구 중곡동');
+
+insert into emp19(empno, ename, age, birth, telecom, major, email, address)
+values(28, '김진경', 31, to_date('1993/03/23','yyyy/mm/dd'), 'kt', '분자생명공학', 'jin190059@gmail.com', '경기도 용인시 수지구' );
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 25, '유동현', 26, to_date('1998/05/18','YYYY/MM/DD'),'sk','의료공학','dhy98@naver.com','서울시 광진구 구의동');
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 27, '황지영', 30, to_date('1994/09/10','YYYY/MM/DD'), 'sk', '외식산업', 'rwjy13@naver.com', '경기도 용인시 수지구' );
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+VALUES(2, '한지희', 28, to_date('1995/07/07', 'YYYY/MM/DD'), 'sk', '통계데이터', 'zee7@kakao.com', '경기도 남양주시 화도읍');
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values(11,'유재현',32,to_date('1992/02/03','YYYY/MM/DD'),'lg알뜰','한문학','constell85@naver.com','서울시 강남구 개포4동');
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values(9,'이현서', 25, to_date('2000/01/06','YYYY/MM/DD'), 'KT', 'AI전공', 'oesnoeyhl@naver.com', '경기도 남양주시 별내동');
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 30, '서동현', 28, to_date('1996/01/13','YYYY/MM/DD'), 'kt',
+'무역물류학과', 'tjehdgus113@gmail.com', '서울시 송파구 송파동' );
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 7, '조혜정', 29, to_date('1995/12/10','YYYY/MM/DD'), 'lg', '재활과학', 'chonny1210@naver.com', '서울시 송파구 삼전동' );
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values( 4, '이승원', 26, to_date('1998/04/24','YYYY/MM/DD'), 'sk',
+'건축', '15sally51@naver.com', '용인시 처인구 고림동' );
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+VALUES (8, '이혜인', 28, to_date('1998/01/20','YYYY/MM/DD'), 'SKT', '아동보육', 'ie3682@naver.com', '성남시 분당구 백현동');
+
+INSERT INTO emp19 (empno,ename,age,birth,telecom,major,email,address)
+values(15,'김준희',26,to_date('1999/12/12','YYYY/MM/DD'),'sk','통계학과','kjhata@naver.com','성남시 중원구 성남동');
+
+insert into emp19 (empno, ename, age, birth, telecom, major, email, address)
+values (13, '김연우', 24, to_date('2000/07/18','YYYY/MM/DD'), 'kt', '문헌/빅데이터','yeonwoo1016@naver.com', '성남시 분당구 서현동');
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+values(1, '심지민', 27, to_date('1997/06/28', 'YYYY/MM/DD'), 'sk', '일본학', 'jmsword25@gmail.com', '서울시 송파구 장지동');
+
+insert into emp19 (empno, ename, age, birth, telecom, major, email, address)
+values (26, '이원석', 31, to_date('1993/01/11','YYYY/MM/DD'), 'SKT', '관광', 'naiw30@gmail.com', '성남시 분당구 운중동');
+
+iNSERT INTO emp19 (empno, ename, age, birth, telecom, major, email, address)
+values(16, '박찬혁', 27, to_date('1997/09/08','YYYY/MM/DD'), 'lg','컴공',
+'cksgu3304@gmail.com', '서울시 강남구 역삼동');
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values(10,'석승연',25,to_date('2000/02/16','yyyy/mm/dd'),'lg','기계공학',
+'kjkj750@naver.com','서울시 강남구 역삼동');
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+values(18, '이동근', 33, to_date('1991/06/06','YYYY/MM/DD'), 'LG', '시각디자인', 'dgriii0606@naver.com', '서울시 강서구 염창동');
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values(20, '한수연', 28, to_date('1996/02/04','YYYY/MM/DD'), 'lg',
+'정보사회학', 'gkstnekf9875@naver.com', '서울시 동작구 신대방동' );
+
+INSERT INTO emp19(empno, ename, age, birth, telecom, major, email, address)
+values(17, '김서준', 27, to_date('1997/02/05', 'YYYY/MM/DD'), 'kt', '국제통상', 'tjwns0520@naver.com', '서울시 동작구 상도동');
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values(24, '경진우',27,to_date('1998/11/03','YYYY/MM/DD'),'lg','기계공학','wlsdn6746@naver.com','경기도 평택시 이충동'
+);
+
+insert into emp19(empno,ename,age,birth,telecom,major,email,address)
+values(21, '손주용', 26, to_date('1998/07/06','YYYY/MM/DD'), 'kt',
+'경영', 'sjo980706@hanmail.net', '안양시 동안구 달안동' );
+
+insert into emp19 (empno, ename, age, birth, telecom, major, email, address)
+values (23, '성연우', 38, to_date('1985/01/11','YYYY/MM/DD'), 'SKT', '화학', 'ddoolla85@naver.com', '서울시 서초구 방배동');
+
+INSERT INTO emp19(empno,ename,age,birth,telecom,major,email,address)
+values(22, '박진우',28,to_date('1996/08/22','YYYY/MM/DD'),'skt','경영학','jinjin7766@naver.com','서울시 종로구 창신동');
+
+insert into emp19(empno, ename)  values(31,'남궁현민');
+insert into emp19(empno, ename)  values(32,'김송');
+
+update emp19
+set age=28
+where ename='조혜정';
+
+update emp19
+set age=24
+where ename='이현서';
+
+update emp19
+set age=24
+where ename='노승욱';
+
+update emp19
+set age=23
+where ename = '김연우';
+
+update emp19
+set age=25
+where ename='경진우';
+
+update emp19
+set age=25
+where ename='손주용';
+
+UPDATE emp19
+SET age = 26
+where ename = '심지민';
+
+UPDATE emp19
+SET age=29
+WHERE ename='황지영';
+
+UPDATE EMP19
+SET age=26
+WHERE ename='이혜인';
+
+update emp19
+set age = 24
+where ename='김준희';
+update emp19
+set age=32
+where ename='이동근';
+
+update emp19
+set age = 26
+where ename ='박찬혁';
+
+update emp19
+set age = 24
+where ename = '석승연';
+
+commit;
+
+select *
+ from emp19
+ order by empno asc;
+```
+
+```sql
+alter  table  emp19  add  gender  varchar2(10);
+
+UPDATE emp19 SET gender = '남'WHERE ename = '박찬혁';
+
+update emp 19 set gender='여' where ename='조혜정';
+
+update emp19 set gender = '여' where ename='이승원';
+
+update emp19 set gender='남' where ename='서동현';
+
+UPDATE emp19 SET gender = '여' WHERE ename = '심지민';
+
+UPDATE emp19 SET gender='여' WHERE ename='윤지윤';
+
+update emp19 set gender = '여' where ename = '김연우';
+
+update emp19 set gender = '여' where ename = '박보은';
+
+update emp19 set gender = '여' where ename = '김진경';
+
+update emp19 set gender='여' where ename='이현서';
+
+update emp19 set gender='여' where ename='한수연';
+
+update emp19 set gender='여' where ename ='문혜선';
+
+update emp19 set gender = '여'where ename = '석승연';
+
+UPDATE emp19 SET gender='여' WHERE ename='한지희';
+
+update emp19 set gender = '남' where ename = '유동현';
+
+update emp19 set gender ='남' where ename='이원석';
+
+update emp19 set gender = '남' where ename = '손주용';
+
+update emp19 set gender='남' where ename='이동근';
+
+update emp19 set gender = '남' where ename = '경진우';
+
+update emp19 set gender = '남' where ename = '김서준';
+
+UPDATE EMP19 SET GENDER='여' WHERE ENAME='신지혜';
+
+update emp19 set gender = '남' where ename = '김준희';
+
+UPDATE emp19 set gender='남' WHERE ename='유재현';
+
+update emp19 set gender='여' where ename='황지영';
+
+update emp19 set gender='남' where ename='노승욱';
+
+update emp19 set gender = '여' where ename = '이혜인';
+
+update emp19 set gender ='남' where ename = '성연우';
+update emp19 set gender ='남' where ename = '박진우';
+update emp19 set gender='여' where ename='박두연';
+update emp19 set gender='여' where ename='문혜선';
+update emp19 set  gender='여' where ename='조혜정';
+update emp19 set  gender='여' where ename='안민영';
+commit;
+select * from emp19;
+```
+
+```sql
+insert  into emp19(empno, ename)  values  (33, '제갈현');
+
+commit;
+```
+
+### 마지막 문제. 우리반 테이블에서 학생이름, 나이, 전공을 출력하는데 컬럼명을 한글로 출력하시오!
+
+```jsx
+select ename as 이름, age as 나이, major as 전공
+from emp19;
+```
